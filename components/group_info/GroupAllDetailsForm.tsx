@@ -120,7 +120,14 @@ export default function EmployeeForm(props: iEmployeeFormprops) {
       setErrorMessage('');
       formik.resetForm();
     };
-  }, [show]);
+  }, [
+    data,
+    departmentOptionsById,
+    formik,
+    groupAllDetailsBy,
+    selectEmployeeById,
+    show,
+  ]);
   useEffect(() => {
     if (formik.values.allowedDepartments) {
       const departmentsIds = formik.values.allowedDepartments.map(
@@ -138,7 +145,7 @@ export default function EmployeeForm(props: iEmployeeFormprops) {
         )
       );
     }
-  }, [formik.values.allowedDepartments]);
+  }, [formik, formik.values.allowedDepartments, selectEmployeeOptions]);
   return (
     <Modal
       className="w-6/12 max-w-5xl"

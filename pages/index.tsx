@@ -39,8 +39,12 @@ const Home: NextPage = () => {
       dispatch(
         deleteEmployeeAPI(
           data as iEmployee,
-          () => {},
-          () => {}
+          () => {
+            null;
+          },
+          () => {
+            null;
+          }
         )
       );
     }
@@ -59,7 +63,7 @@ const Home: NextPage = () => {
         )
       );
     }
-  }, [selectedGroupOption]);
+  }, [employeeById, groupAllDetailsById, selectedGroupOption]);
 
   return (
     <div>

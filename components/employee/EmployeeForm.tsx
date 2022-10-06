@@ -87,7 +87,7 @@ export default function EmployeeForm(props: iEmployeeFormprops) {
       setErrorMessage('');
       formik.resetForm();
     };
-  }, [show]);
+  }, [data, departmentOptionsById, formik, show]);
 
   return (
     <Modal
@@ -164,7 +164,7 @@ export default function EmployeeForm(props: iEmployeeFormprops) {
               onBlur={formik.handleBlur}
               getOptionValue={(options) => options.id.toString()}
               getOptionLabel={(options) => options.name}
-              options={departmentOptions}
+              options={departmentOptions ?? []}
               menuPlacement="top"
             />
           </FieldWraper>

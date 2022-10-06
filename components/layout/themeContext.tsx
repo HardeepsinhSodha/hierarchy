@@ -8,7 +8,9 @@ export interface ThemeContextProps {
 
 export const ThemeContext = createContext<ThemeContextProps>({
   theme: 'default',
-  setTheme: () => {},
+  setTheme: () => {
+    null;
+  },
 });
 
 /**
@@ -35,8 +37,8 @@ export const ThemeContextProvider = ({
   /**
    * Apply theme to 'html' tag on DOM.
    */
-  const applyTheme = (theme: string = 'default') => {
-    let newTheme = theme;
+  const applyTheme = (theme = 'default') => {
+    const newTheme = theme;
     const html = document.getElementsByTagName('html')[0];
     localStorage.setItem('theme', theme);
     (html as any).setAttribute('data-theme', newTheme);

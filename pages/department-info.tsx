@@ -27,8 +27,12 @@ const DepartmentTable: NextPage = () => {
       dispatch(
         deleteDepartmentAPI(
           data as iDepartment,
-          () => {},
-          () => {}
+          () => {
+            null;
+          },
+          () => {
+            null;
+          }
         )
       );
     }

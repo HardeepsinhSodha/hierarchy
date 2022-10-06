@@ -25,8 +25,12 @@ const EmployeeTable: NextPage = () => {
       dispatch(
         deleteEmployeeAPI(
           data as iEmployee,
-          () => {},
-          () => {}
+          () => {
+            null;
+          },
+          () => {
+            null;
+          }
         )
       );
     }

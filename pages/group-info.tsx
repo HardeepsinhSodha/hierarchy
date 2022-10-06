@@ -40,8 +40,12 @@ const GroupAllDetailsTable: NextPage = () => {
       dispatch(
         deleteGroupAllDetailsAPI(
           data as iGroupAllDetails,
-          () => {},
-          () => {}
+          () => {
+            null;
+          },
+          () => {
+            null;
+          }
         )
       );
     }

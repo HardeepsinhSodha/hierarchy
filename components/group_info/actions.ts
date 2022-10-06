@@ -38,16 +38,16 @@ export const addNewGroupAllDetailsAPI =
         0
       ) + 1;
     const newAllowedDepartments: number[] =
-      body.allowedDepartments?.map((department) => department.id) ?? [];
-    const newAdmin: number = body.admin?.id as number;
+      allowedDepartments?.map((department) => department.id) ?? [];
+    const newAdmin: number = admin?.id as number;
     const newChildren: iGroupMapping[] =
-      body.children?.map((child, index) => ({
+      children?.map((child, index) => ({
         id: lastGroupMappingId + index,
         parent_group_id: id,
         child_group_id: child.id,
       })) ?? [];
     const newMembers: iGroupMemberData[] =
-      body.members?.map((member, index) => ({
+      members?.map((member, index) => ({
         id: lastGroupMemberId + index,
         group_id: id,
         employee_id: member.id,
@@ -98,16 +98,16 @@ export const editGroupAllDetailsAPI =
           ) + 1;
 
         const newAllowedDepartments: number[] =
-          body.allowedDepartments?.map((department) => department.id) ?? [];
-        const newAdmin: number = body.admin?.id as number;
+          allowedDepartments?.map((department) => department.id) ?? [];
+        const newAdmin: number = admin?.id as number;
         const newChildren: iGroupMapping[] =
-          body.children?.map((child, index) => ({
+          children?.map((child, index) => ({
             id: lastGroupMappingId + index,
             parent_group_id: id,
             child_group_id: child.id,
           })) ?? [];
         const newMembers: iGroupMemberData[] =
-          body.members?.map((member, index) => ({
+          members?.map((member, index) => ({
             id: lastGroupMemberId + index,
             group_id: id,
             employee_id: member.id,
@@ -115,14 +115,6 @@ export const editGroupAllDetailsAPI =
             joining_date: '',
             left_data: '',
           })) ?? [];
-        console.log({
-          ...rest,
-          id,
-          children: newChildren,
-          members: newMembers,
-          allowedDepartments: newAllowedDepartments,
-          admin: newAdmin,
-        });
         onSuccess();
         dispatch(
           editGroup({

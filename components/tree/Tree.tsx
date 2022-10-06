@@ -32,7 +32,7 @@ export default function Tree({ root }: iTreeProps) {
             )}
           </div>
         ))}
-        {root?.children?.map((item, index) => (
+        {root?.children?.map((item) => (
           <ItemList key={item.id} root={item} />
         ))}
       </div>
