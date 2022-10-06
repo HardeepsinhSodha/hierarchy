@@ -46,7 +46,7 @@ const schema = Yup.object().shape({
   admin: Yup.object(),
 });
 
-export default function EmployeeForm(props: iEmployeeFormprops) {
+export default function GroupAllDetailsForm(props: iEmployeeFormprops) {
   const { show, handleClose, data } = props;
   const groupAllDetailsOption = useAppSelector(selectAllGroupAllDetails);
   const groupAllDetailsBy = useAppSelector(selectAllGroupAllDetailsById);
@@ -123,7 +123,6 @@ export default function EmployeeForm(props: iEmployeeFormprops) {
   }, [
     data,
     departmentOptionsById,
-    formik,
     groupAllDetailsBy,
     selectEmployeeById,
     show,
@@ -145,7 +144,7 @@ export default function EmployeeForm(props: iEmployeeFormprops) {
         )
       );
     }
-  }, [formik, formik.values.allowedDepartments, selectEmployeeOptions]);
+  }, [formik.values.allowedDepartments, selectEmployeeOptions]);
   return (
     <Modal
       className="w-6/12 max-w-5xl"

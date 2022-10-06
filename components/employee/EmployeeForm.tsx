@@ -87,7 +87,7 @@ export default function EmployeeForm(props: iEmployeeFormprops) {
       setErrorMessage('');
       formik.resetForm();
     };
-  }, [data, departmentOptionsById, formik, show]);
+  }, [data, departmentOptionsById, show]);
 
   return (
     <Modal
