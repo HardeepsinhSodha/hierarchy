@@ -70,6 +70,10 @@ export const deleteEmployeeAPI =
     onError: (message: string) => void
   ) =>
   (dispatch: AppDispatch) => {
-    onSuccess();
-    dispatch(deleteEmployee(body));
+    try {
+      onSuccess();
+      dispatch(deleteEmployee(body));
+    } catch (error) {
+      onError(error as string);
+    }
   };

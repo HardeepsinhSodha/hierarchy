@@ -1,7 +1,7 @@
 import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
 import { Button, Modal } from 'react-daisyui';
-import Select from 'react-select';
+import Select, { MultiValue, SingleValue } from 'react-select';
 import * as Yup from 'yup';
 import { useAppDispatch, useAppSelector } from '../../hooks/store/utilityHooks';
 import { iDepartment } from '../../types/department';
@@ -75,7 +75,6 @@ export default function GroupAllDetailsForm(props: iEmployeeFormprops) {
         )
       );
     }
-    console.log(values);
   };
   const formik = useFormik<iGroupAllDetailsInput>({
     initialValues: {
@@ -194,7 +193,9 @@ export default function GroupAllDetailsForm(props: iEmployeeFormprops) {
             <Select
               name="admin"
               value={formik.values.admin}
-              onChange={(value: any) => formik.setFieldValue('admin', value)}
+              onChange={(value: SingleValue<iEmployee>) =>
+                formik.setFieldValue('admin', value)
+              }
               onBlur={formik.handleBlur}
               getOptionValue={(options) => options.id.toString()}
               getOptionLabel={(options) => options.name}
@@ -213,7 +214,7 @@ export default function GroupAllDetailsForm(props: iEmployeeFormprops) {
             <Select
               name="allowedDepartments"
               value={formik.values.allowedDepartments}
-              onChange={(value: any) =>
+              onChange={(value: MultiValue<iDepartment>) =>
                 formik.setFieldValue('allowedDepartments', value)
               }
               isMulti={true}
@@ -250,7 +251,9 @@ export default function GroupAllDetailsForm(props: iEmployeeFormprops) {
               name="children"
               isDisabled={!formik.values.canHaveSubGroup}
               value={formik.values.children}
-              onChange={(value: any) => formik.setFieldValue('children', value)}
+              onChange={(value: MultiValue<iDepartment>) =>
+                formik.setFieldValue('children', value)
+              }
               isMulti={true}
               onBlur={formik.handleBlur}
               getOptionValue={(options) => options.id.toString()}
@@ -270,7 +273,9 @@ export default function GroupAllDetailsForm(props: iEmployeeFormprops) {
               name="members"
               value={formik.values.members}
               isDisabled={!formik.values.canHaveMembers}
-              onChange={(value: any) => formik.setFieldValue('members', value)}
+              onChange={(value: MultiValue<iEmployee>) =>
+                formik.setFieldValue('members', value)
+              }
               isMulti={true}
               onBlur={formik.handleBlur}
               getOptionValue={(options) => options.id.toString()}

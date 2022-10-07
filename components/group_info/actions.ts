@@ -9,6 +9,7 @@ import { addNewGroup, deleteGroup, editGroup } from './groupInfoSlice';
 interface iEditGroupAllDetailsAPI extends iGroupAllDetailsInput {
   id: number;
 }
+
 export const addNewGroupAllDetailsAPI =
   (
     body: Omit<iGroupAllDetailsInput, 'id'>,
@@ -75,7 +76,6 @@ export const editGroupAllDetailsAPI =
   ) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
-    console.log(body);
     if (state?.group?.groupAllDetails?.[body.id]) {
       const previouseData = state?.group?.groupAllDetails?.[body.id];
       if (
@@ -84,6 +84,21 @@ export const editGroupAllDetailsAPI =
       ) {
         onError('Name is already taken');
       } else {
+        let recursiveGroupName = '';
+        body.children?.find((child) => {
+          if (isGroupRecursive(child.id, body.id, state)) {
+            recursiveGroupName = child.name;
+            return true;
+          }
+          return false;
+        });
+        if (recursiveGroupName) {
+          onError(
+            `Group ${recursiveGroupName} is recursive remove that and try again.`
+          );
+          return false;
+        }
+
         const { allowedDepartments, admin, children, members, ...rest } = body;
         const id = body.id;
         const lastGroupMappingId =
@@ -144,3 +159,22 @@ export const deleteGroupAllDetailsAPI =
       console.log('Can not remove this group.');
     }
   };
+export function isGroupRecursive(
+  parent_group_id: number,
+  child_group_id: number,
+  state: RootState
+): boolean {
+  const children = state.group.groupAllDetails[parent_group_id]?.children;
+  let result = false;
+  children?.every((child) => {
+    if (child.child_group_id === child_group_id) {
+      result = true;
+      return false;
+    } else if (isGroupRecursive(child.child_group_id, child_group_id, state)) {
+      result = true;
+      return false;
+    }
+    return true;
+  });
+  return result;
+}

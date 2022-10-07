@@ -27,6 +27,7 @@ const Home: NextPage = () => {
   const employeeById = useAppSelector(selectAllEmployeeById);
   const groupDataOptions = useAppSelector(selectAllGroupAllDetails);
   const [show, setShow] = useState(false);
+  const [expandAll, setExpandAll] = useState(true);
   const [selectedData, setSelectedData] = useState<iEmployee>();
   const dispatch = useAppDispatch();
   const handleAction = (type: 'edit' | 'delete' | 'add', data?: iEmployee) => {
@@ -75,7 +76,7 @@ const Home: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="grid grid-cols-1 sm:grid-cols-4 place-content-start items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 place-content-start items-center">
         <FieldWraper name="group" label="Group" controller="select">
           <ReactSelect
             name="department"
@@ -93,6 +94,12 @@ const Home: NextPage = () => {
         >
           <UserPlusIcon className="w-8 h-8" />
           Add Employee
+        </button>
+        <button
+          className="btn btn-primary gap-3 mt-auto mb-3"
+          onClick={() => setExpandAll(!expandAll)}
+        >
+          {expandAll ? 'Collapse All' : 'Expand All'}
         </button>
       </div>
       <div className="card bg-base-100 shadow-md m-4 overflow-auto">
