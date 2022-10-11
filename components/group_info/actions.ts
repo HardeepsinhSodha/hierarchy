@@ -1,11 +1,15 @@
-import { AppDispatch, RootState } from '../../store/store';
 import type {
   iGroupAllDetails,
   iGroupMapping,
   iGroupMemberData,
 } from '../../types/group';
+import { commonStrings } from '../../utility/CommonStrings';
+import { AppDispatch, RootState } from '../store/store';
+import { addNewAlert } from '../toast/toastSlice';
+import { controller } from './controller';
 import type { iGroupAllDetailsInput } from './GroupAllDetailsForm';
 import { addNewGroup, deleteGroup, editGroup } from './groupInfoSlice';
+const { error: E, success: S } = controller.action;
 interface iEditGroupAllDetailsAPI extends iGroupAllDetailsInput {
   id: number;
 }
@@ -20,7 +24,9 @@ export const addNewGroupAllDetailsAPI =
     const state = getState();
 
     if (state.group.groupByName[body.name.toLowerCase()]) {
-      onError('Name is already registered');
+      onError(E.nameDuplication);
+      dispatch(addNewAlert({ text: E.nameDuplication, status: 'error' }));
+      return null;
     }
     const { allowedDepartments, admin, children, members, ...rest } = body;
     const id =
@@ -58,6 +64,12 @@ export const addNewGroupAllDetailsAPI =
       })) ?? [];
     onSuccess();
     dispatch(
+      addNewAlert({
+        text: S.added(rest.name),
+        status: 'success',
+      })
+    );
+    dispatch(
       addNewGroup({
         ...rest,
         id,
@@ -82,7 +94,8 @@ export const editGroupAllDetailsAPI =
         previouseData.name !== body.name &&
         state?.group?.groupByName[body.name.toLowerCase()]
       ) {
-        onError('Name is already taken');
+        onError(E.nameDuplication);
+        dispatch(addNewAlert({ text: E.nameDuplication, status: 'error' }));
       } else {
         let recursiveGroupName = '';
         body.children?.find((child) => {
@@ -93,8 +106,12 @@ export const editGroupAllDetailsAPI =
           return false;
         });
         if (recursiveGroupName) {
-          onError(
-            `Group ${recursiveGroupName} is recursive remove that and try again.`
+          onError(E.recursive(recursiveGroupName));
+          dispatch(
+            addNewAlert({
+              text: E.recursive(recursiveGroupName),
+              status: 'error',
+            })
           );
           return false;
         }
@@ -132,6 +149,12 @@ export const editGroupAllDetailsAPI =
           })) ?? [];
         onSuccess();
         dispatch(
+          addNewAlert({
+            text: S.edited(rest.name),
+            status: 'success',
+          })
+        );
+        dispatch(
           editGroup({
             ...rest,
             id,
@@ -142,7 +165,10 @@ export const editGroupAllDetailsAPI =
           })
         );
       }
-    } else onError('Group not Found');
+    } else {
+      onError(E.groupNotFound);
+      dispatch(addNewAlert({ text: E.groupNotFound, status: 'error' }));
+    }
   };
 export const deleteGroupAllDetailsAPI =
   (
@@ -153,10 +179,21 @@ export const deleteGroupAllDetailsAPI =
   (dispatch: AppDispatch) => {
     if (body.removable) {
       onSuccess();
+      dispatch(
+        addNewAlert({
+          text: S.deleted(body.name),
+          status: 'success',
+        })
+      );
       dispatch(deleteGroup(body));
     } else {
-      onError('Can not remove this group.');
-      console.log('Can not remove this group.');
+      onError(E.canNotRemove(body.name));
+      dispatch(
+        addNewAlert({
+          text: E.canNotRemove(body.name),
+          status: 'error',
+        })
+      );
     }
   };
 export function isGroupRecursive(
@@ -178,3 +215,89 @@ export function isGroupRecursive(
   });
   return result;
 }
+export const promoteMemberAPI =
+  (
+    body: iGroupAllDetails,
+    admin: number,
+    onSuccess?: () => void,
+    onError?: (message: string) => void
+  ) =>
+  (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const state = getState();
+      if (state?.group?.groupAllDetails?.[body.id]) {
+        const members = body.members.filter(
+          (member) => member.employee_id !== admin
+        );
+        dispatch(editGroup({ ...body, admin, members }));
+        onSuccess?.();
+        dispatch(
+          addNewAlert({
+            text: S.promoted,
+            status: 'success',
+          })
+        );
+      } else {
+        onError?.(E.groupNotFound);
+        dispatch(
+          addNewAlert({
+            text: E.groupNotFound,
+            status: 'error',
+          })
+        );
+      }
+    } catch (error) {
+      onError?.(error as string);
+    }
+  };
+export const promoteAdminAPI =
+  (
+    body: iGroupAllDetails,
+    admin: number,
+    onSuccess?: () => void,
+    onError?: (message: string) => void
+  ) =>
+  (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const state = getState();
+      if (state?.group?.groupAllDetails?.[body.id]) {
+        const groupMappingId = state?.group?.groupMappingByChildId?.[body.id];
+        if (groupMappingId) {
+          const parent_group_id =
+            state.group.groupMapping[groupMappingId].parent_group_id;
+          const parentGroupDetails =
+            state.group.groupAllDetails[parent_group_id];
+          dispatch(editGroup({ ...parentGroupDetails, admin }));
+          dispatch(editGroup({ ...body, admin: undefined }));
+          onSuccess?.();
+          dispatch(
+            addNewAlert({
+              text: S.promoted,
+              status: 'success',
+            })
+          );
+        } else {
+          onError?.(S.noPlaceToPromote);
+          dispatch(
+            addNewAlert({
+              text: S.noPlaceToPromote,
+              status: 'error',
+            })
+          );
+        }
+      } else {
+        onError?.(E.groupNotFound);
+        dispatch(
+          addNewAlert({
+            text: E.groupNotFound,
+            status: 'error',
+          })
+        );
+      }
+    } catch (error) {
+      onError?.(error as string);
+      dispatch(
+        addNewAlert({ text: commonStrings.somethingWentWrong, status: 'error' })
+      );
+    }
+  };

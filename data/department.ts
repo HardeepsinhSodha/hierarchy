@@ -3,24 +3,19 @@ import { iDepartment } from '../types/department';
 export const departmentData: Record<number, iDepartment> = {
   1: {
     id: 1,
-    name: 'HR',
+    name: 'Rogue ninja',
   },
   2: {
     id: 2,
-    name: 'design',
+    name: 'Hidden Leaf',
   },
   3: {
     id: 3,
-    name: 'sales',
-  },
-  4: {
-    id: 4,
-    name: 'Engineering',
+    name: 'Anbu Black Ops',
   },
 };
 export const departmentDataByName: Record<string, number> = {
-  hr: 1,
-  HR: 2,
-  sales: 3,
-  engineering: 4,
+  'rogue ninja': 1,
+  'hidden leaf': 2,
+  'anbu black ops': 3,
 };

@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { departmentData, departmentDataByName } from '../../data/department';
-import { RootState } from '../../store/store';
 import type { iDepartment } from '../../types/department';
+import { RootState } from '../store/store';
 
 interface iInitialState {
   department: Record<number, iDepartment>;

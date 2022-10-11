@@ -1,11 +1,11 @@
+import type { iFieldWraperProps } from '../../types/formControler';
 import {
   CheckboxField,
   iInputProps,
   InputField,
   InputGroupField,
 } from './Fields';
-import FieldWrapper, { iFieldWraperProps } from './FieldWrapper';
-
+import FieldWrapper from './FieldWrapper';
 export interface FormControllerProps
   extends Omit<iFieldWraperProps, 'children'>,
     iInputProps {}

@@ -6,3 +6,7 @@ export default interface iEmployee {
   email_id: string;
   department: number;
 }
+export interface iHandleEpmloyeeAction {
+  (type: 'edit' | 'delete' | 'add', data?: iEmployee): void;
+}
+export type iSelectedEmployeeOption = iEmployee | null | undefined;

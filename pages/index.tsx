@@ -1,70 +1,35 @@
-import { UserPlusIcon } from '@heroicons/react/24/solid';
+import { UserGroupIcon, UserPlusIcon } from '@heroicons/react/24/solid';
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
 import ReactSelect from 'react-select';
-import { deleteEmployeeAPI } from '../components/employee/actions';
 import EmployeeForm from '../components/employee/EmployeeForm';
-import { selectAllEmployeeById } from '../components/employee/employeeSlice';
 import FieldWraper from '../components/form_field/FieldWrapper';
-import {
-  selectAllGroupAllDetails,
-  selectAllGroupAllDetailsById,
-} from '../components/group_info/groupInfoSlice';
-import { getTreeData } from '../components/tree/actions';
+import GroupAllDetailsForm from '../components/group_info/GroupAllDetailsForm';
+import { controller as S } from '../components/tree/controller';
 import Tree from '../components/tree/Tree';
-import { useAppDispatch, useAppSelector } from '../hooks/store/utilityHooks';
-import iEmployee from '../types/employee';
-import { iGroupAllDetails } from '../types/group';
-import iTreeRoot from '../types/tree';
-
+import useHome from '../hooks/home/useHome';
+import { commonRSStyle } from '../utility/const';
 const Home: NextPage = () => {
-  const [data, setData] = useState<iTreeRoot>();
-  const [selectedGroupOption, setSelectedGroupOption] = useState<
-    iGroupAllDetails | null | undefined
-  >();
-  const groupAllDetailsById = useAppSelector(selectAllGroupAllDetailsById);
-  const employeeById = useAppSelector(selectAllEmployeeById);
-  const groupDataOptions = useAppSelector(selectAllGroupAllDetails);
-  const [show, setShow] = useState(false);
-  const [expandAll, setExpandAll] = useState(true);
-  const [selectedData, setSelectedData] = useState<iEmployee>();
-  const dispatch = useAppDispatch();
-  const handleAction = (type: 'edit' | 'delete' | 'add', data?: iEmployee) => {
-    if (type === 'edit') {
-      setSelectedData(data);
-      setShow(true);
-    } else if (type === 'add') {
-      setShow(true);
-    } else {
-      dispatch(
-        deleteEmployeeAPI(
-          data as iEmployee,
-          () => {
-            null;
-          },
-          () => {
-            null;
-          }
-        )
-      );
-    }
-  };
-  const handleClose = () => {
-    setSelectedData(undefined);
-    setShow(false);
-  };
-  useEffect(() => {
-    if (selectedGroupOption) {
-      setData(
-        getTreeData(
-          selectedGroupOption?.id as number,
-          groupAllDetailsById,
-          employeeById
-        )
-      );
-    }
-  }, [employeeById, groupAllDetailsById, selectedGroupOption]);
+  const {
+    selectedEmpoyeeOption,
+    handleEmpoyeeChange,
+    selectedGroupOption,
+    groupDataOptions,
+    empoyeeDataOptions,
+    showEmployeeModal,
+    showGroupDetailsModal,
+    expandAll,
+    selectedEmpoyeeData,
+    selectedGroupDetailData,
+    groupAllDetailsById,
+    setExpandAll,
+    handleGroupChange,
+    empoyeeFilterLogic,
+    handleEpmloyeeAction,
+    handleGroupDetailAction,
+    handleCloseEmployeeModal,
+    handleCloseGroupDetailsModal,
+  } = useHome();
 
   return (
     <div>
@@ -76,38 +41,96 @@ const Home: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 place-content-start items-center">
-        <FieldWraper name="group" label="Group" controller="select">
+      <div className="flex flex-wrap space-x-3 items-center">
+        <FieldWraper {...S.formField.employee}>
           <ReactSelect
-            name="department"
+            id={S.formField.employee.id}
+            name={S.formField.employee.name}
+            value={selectedEmpoyeeOption}
+            onChange={handleEmpoyeeChange}
+            getOptionValue={(options) => `${options.id}`}
+            getOptionLabel={(options) => options.name}
+            options={empoyeeDataOptions}
+            menuPlacement="top"
+            isClearable={true}
+            filterOption={empoyeeFilterLogic}
+            placeholder={S.formField.employee.placeholder}
+            {...commonRSStyle}
+          />
+        </FieldWraper>
+        <FieldWraper {...S.formField.group}>
+          <ReactSelect
+            id={S.formField.group.id}
+            name={S.formField.group.name}
             value={selectedGroupOption}
-            onChange={setSelectedGroupOption}
+            onChange={handleGroupChange}
             getOptionValue={(options) => options.id.toString()}
             getOptionLabel={(options) => options.name}
             options={groupDataOptions}
-            menuPlacement="top"
+            isMulti={true}
+            {...commonRSStyle}
+            className="react-select__control react-select__menu react-select__option"
           />
         </FieldWraper>
         <button
           className="btn btn-primary gap-3 mt-auto mb-3"
-          onClick={() => handleAction('add')}
+          onClick={() => handleEpmloyeeAction('add')}
         >
           <UserPlusIcon className="w-8 h-8" />
-          Add Employee
+          {S.addEmployee}
         </button>
         <button
           className="btn btn-primary gap-3 mt-auto mb-3"
-          onClick={() => setExpandAll(!expandAll)}
+          onClick={() => handleGroupDetailAction('add')}
         >
-          {expandAll ? 'Collapse All' : 'Expand All'}
+          <UserGroupIcon className="w-8 h-8" />
+          {S.createGroup}
         </button>
-      </div>
-      <div className="card bg-base-100 shadow-md m-4 overflow-auto">
-        <div className="card-body">
-          <Tree root={data} />
+        <div className="space-x-2 mt-auto mb-3">
+          <button
+            className="btn btn-primary"
+            disabled={!selectedGroupOption}
+            onClick={() => setExpandAll(true)}
+          >
+            {S.expandAll}
+          </button>
+          <button
+            className="btn btn-primary"
+            disabled={!selectedGroupOption}
+            onClick={() => setExpandAll(false)}
+          >
+            {S.collapseAll}
+          </button>
         </div>
       </div>
-      <EmployeeForm show={show} handleClose={handleClose} data={selectedData} />
+      {selectedGroupOption?.map((root) => (
+        <div
+          data-test-id="tree"
+          key={root.id}
+          className="card bg-base-100 shadow-md m-4"
+        >
+          <div className="card-body">
+            <Tree
+              root={groupAllDetailsById[root.id]}
+              expandAll={expandAll}
+              handleEpmloyeeAction={handleEpmloyeeAction}
+              setExpandAll={setExpandAll}
+              handleGroupDetailAction={handleGroupDetailAction}
+            />
+          </div>
+        </div>
+      ))}
+
+      <EmployeeForm
+        show={showEmployeeModal}
+        handleClose={handleCloseEmployeeModal}
+        data={selectedEmpoyeeData}
+      />
+      <GroupAllDetailsForm
+        show={showGroupDetailsModal}
+        handleClose={handleCloseGroupDetailsModal}
+        data={selectedGroupDetailData}
+      />
     </div>
   );
 };

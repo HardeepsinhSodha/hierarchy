@@ -9,7 +9,7 @@ export interface iGroup extends Omit<iGroupData, 'admin'> {
 export interface iGroupData {
   id: number;
   name: string;
-  admin: number;
+  admin?: number;
   title?: string;
   canHaveSubGroup: boolean;
   canHaveMembers: boolean;
@@ -26,6 +26,7 @@ export interface iGroupMapping {
   child_group_id: number;
 }
 export interface iGroupMember extends iGroupMemberData, Omit<iEmployee, 'id'> {}
+export type iGroupMemberByEmployeeId = Record<number, number[]>;
 export interface iGroupMemberData {
   id: number;
   group_id: number;
@@ -33,4 +34,11 @@ export interface iGroupMemberData {
   title?: string;
   joining_date?: string;
   left_data?: string;
+}
+export type iSelectedGroupOption = iGroupAllDetails | null | undefined;
+export interface iHandleGroupDetailAction {
+  (type: 'edit' | 'delete' | 'add', data?: iGroupAllDetails): void;
+}
+export interface iUpdateOnEmployeeDeleteAction {
+  id: number;
 }

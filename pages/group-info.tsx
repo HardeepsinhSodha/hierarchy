@@ -5,7 +5,8 @@ import {
 } from '@heroicons/react/24/solid';
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { selectAllDepartmentById } from '../components/department/departmentSlice';
 import { selectAllEmployeeById } from '../components/employee/employeeSlice';
 import { deleteGroupAllDetailsAPI } from '../components/group_info/actions';
 import GroupAllDetailsForm from '../components/group_info/GroupAllDetailsForm';
@@ -27,29 +28,30 @@ const GroupAllDetailsTable: NextPage = () => {
   const GroupAllDetailsData = useAppSelector(selectAllGroupAllDetails);
   const GroupAllDetailsDataById = useAppSelector(selectAllGroupAllDetailsById);
   const EmployeeByIdData = useAppSelector(selectAllEmployeeById);
-  const handleAction = (
-    type: 'edit' | 'delete' | 'add',
-    data?: iGroupAllDetails
-  ) => {
-    if (type === 'edit') {
-      setSelectedData(data);
-      setShow(true);
-    } else if (type === 'add') {
-      setShow(true);
-    } else {
-      dispatch(
-        deleteGroupAllDetailsAPI(
-          data as iGroupAllDetails,
-          () => {
-            null;
-          },
-          () => {
-            null;
-          }
-        )
-      );
-    }
-  };
+  const allDepartmentById = useAppSelector(selectAllDepartmentById);
+  const handleAction = useCallback(
+    (type: 'edit' | 'delete' | 'add', data?: iGroupAllDetails) => {
+      if (type === 'edit') {
+        setSelectedData(data);
+        setShow(true);
+      } else if (type === 'add') {
+        setShow(true);
+      } else {
+        dispatch(
+          deleteGroupAllDetailsAPI(
+            data as iGroupAllDetails,
+            () => {
+              null;
+            },
+            () => {
+              null;
+            }
+          )
+        );
+      }
+    },
+    [dispatch]
+  );
   const handleClose = () => {
     setSelectedData(undefined);
     setShow(false);
@@ -61,7 +63,7 @@ const GroupAllDetailsTable: NextPage = () => {
         columns: [
           {
             Header: 'Sr.No.',
-            accessor: (_: any, rowIndex: number) => rowIndex + 1,
+            accessor: (_: iGroupAllDetails, rowIndex: number) => rowIndex + 1,
             id: 'srno',
           },
           {
@@ -75,27 +77,47 @@ const GroupAllDetailsTable: NextPage = () => {
           {
             Header: 'Title',
             id: 'title',
-            accessor: (row) => (row?.title ? row?.title : '-'),
+            accessor: (row: iGroupAllDetails) =>
+              row?.title ? row?.title : '-',
           },
           {
             Header: 'Head',
             id: 'admin',
-            accessor: (row: any) => EmployeeByIdData[row?.admin]?.username,
+            accessor: (row: iGroupAllDetails) =>
+              row?.admin ? EmployeeByIdData[row?.admin]?.username : '',
+          },
+          {
+            Header: "Detartment's member allow",
+            accessor: 'allowedDepartments',
+            Cell: ({ row }: any) => (
+              <div className="flex max-w-64 w-full flex-wrap">
+                {row.original.allowedDepartments?.map((department: number) => (
+                  <p
+                    key={department}
+                    className="bg-secondary text-secondary-content m-2 rounded p-2"
+                  >
+                    {allDepartmentById[department]?.name}
+                  </p>
+                ))}
+              </div>
+            ),
           },
           {
             Header: 'Can Delete',
             id: 'removable',
-            accessor: (row: any) => (row.removable ? 'Yes' : 'No'),
+            accessor: (row: iGroupAllDetails) => (row.removable ? 'Yes' : 'No'),
           },
           {
-            Header: 'Can Delete',
+            Header: 'Sub-Group Allow',
             id: 'canHaveSubGroup',
-            accessor: (row: any) => (row.canHaveSubGroup ? 'Yes' : 'No'),
+            accessor: (row: iGroupAllDetails) =>
+              row.canHaveSubGroup ? 'Yes' : 'No',
           },
           {
-            Header: 'Can Delete',
+            Header: 'Memeber Allow',
             id: 'canHaveMembers',
-            accessor: (row: any) => (row.canHaveMembers ? 'Yes' : 'No'),
+            accessor: (row: iGroupAllDetails) =>
+              row.canHaveMembers ? 'Yes' : 'No',
           },
           {
             Header: 'Members',
@@ -150,12 +172,14 @@ const GroupAllDetailsTable: NextPage = () => {
               <div className="flex justify-around">
                 <PencilIcon
                   className="w-8 h-8 cursor-pointer"
+                  data-test-id="edit"
                   onClick={() =>
                     handleAction('edit', row.original as iGroupAllDetails)
                   }
                 />
                 <TrashIcon
                   className="w-8 h-8 cursor-pointer"
+                  data-test-id="delete"
                   onClick={() =>
                     handleAction('delete', row.original as iGroupAllDetails)
                   }
@@ -166,7 +190,7 @@ const GroupAllDetailsTable: NextPage = () => {
         ],
       },
     ],
-    []
+    [EmployeeByIdData, GroupAllDetailsDataById, handleAction]
   );
 
   return (

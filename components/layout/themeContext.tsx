@@ -13,13 +13,6 @@ export const ThemeContext = createContext<ThemeContextProps>({
   },
 });
 
-/**
- * Theme Context Provider.
- *
- * @param value string
- * @param children ReactNode
- * @returns ReactNode
- */
 export const ThemeContextProvider = ({
   value = 'default',
   children,
@@ -38,24 +31,19 @@ export const ThemeContextProvider = ({
    * Apply theme to 'html' tag on DOM.
    */
   const applyTheme = (theme = 'default') => {
+    setTheme(theme);
     const newTheme = theme;
     const html = document.getElementsByTagName('html')[0];
     localStorage.setItem('theme', theme);
-    (html as any).setAttribute('data-theme', newTheme);
+    (html as HTMLHtmlElement).setAttribute('data-theme', newTheme);
   };
 
-  const handleThemeChange = (theme: string) => {
-    setTheme(theme);
-    applyTheme(theme);
-  };
-
-  /**
-   * Current context value for theme.
-   */
   const val = useMemo(
     () => ({
       theme,
-      setTheme: handleThemeChange,
+      setTheme: (theme: string) => {
+        applyTheme(theme);
+      },
     }),
     [theme]
   );

@@ -6,8 +6,8 @@ import {
   employeeDataPhoneNumber,
   employeeDataUsername,
 } from '../../data/employee';
-import { RootState } from '../../store/store';
 import iEmployee from '../../types/employee';
+import { RootState } from '../store/store';
 interface iInitialState {
   employee: Record<number, iEmployee>;
   employeeUsername: Record<string, number>;

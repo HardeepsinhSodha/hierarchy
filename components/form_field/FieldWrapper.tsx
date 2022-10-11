@@ -1,13 +1,5 @@
-export type FormControllerType = 'input' | 'inputGroup' | 'checkbox' | 'select';
-export interface iFieldWraperProps {
-  label?: string;
-  error?: string | false;
-  secondaryLabel?: string;
-  name: string;
-  children: any;
-  additionalDivClassName?: string;
-  controller: FormControllerType;
-}
+import { iFieldWraperProps } from '../../types/formControler';
+
 export default function FieldWraper(props: iFieldWraperProps) {
   const {
     label,
@@ -47,7 +39,7 @@ export default function FieldWraper(props: iFieldWraperProps) {
       </label>
       {props.children}
       {error && (
-        <label htmlFor={name} className="label-text text-error">
+        <label htmlFor={name} role="error" className="label-text text-error">
           {error}
         </label>
       )}

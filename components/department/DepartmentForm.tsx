@@ -1,20 +1,17 @@
 import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
 import { Button, Modal } from 'react-daisyui';
-import * as Yup from 'yup';
 import { useAppDispatch } from '../../hooks/store/utilityHooks';
 import type { iDepartment } from '../../types/department';
 import FormController from '../form_field/FormController';
 import { addNewDepartmentAPI, editDepartmentAPI } from './actions';
+import { controller as S, schema } from './controller';
 interface iEmployeeFormprops {
   show: boolean;
   handleClose(): void;
   data?: iDepartment;
 }
 
-const schema = Yup.object().shape({
-  name: Yup.string().trim().required('Required'),
-});
 export default function EmployeeForm(props: iEmployeeFormprops) {
   const { show, handleClose, data } = props;
   const dispatch = useAppDispatch();
@@ -35,52 +32,43 @@ export default function EmployeeForm(props: iEmployeeFormprops) {
     }
   };
   const formik = useFormik<Omit<iDepartment, 'id'>>({
-    initialValues: {
-      name: '',
-    },
+    initialValues: S.initialValues,
     onSubmit: onSubmit,
     validationSchema: schema,
   });
   useEffect(() => {
     if (data) {
-      formik.setFieldValue('name', data.name);
+      formik.setFieldValue(S.formField.name.id, data.name);
       setErrorMessage('');
     }
     return () => {
       setErrorMessage('');
       formik.resetForm();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show]);
 
   return (
-    <Modal
-      className="w-6/12 max-w-5xl"
-      open={show}
-      onClickBackdrop={handleClose}
-    >
-      <Button
-        size="sm"
-        shape="circle"
-        className="absolute right-2 top-2"
+    <Modal className="w-6/12 max-w-5xl" open={show}>
+      <button
+        className="btn btn-circle btn-sm absolute right-2 top-2"
         onClick={handleClose}
       >
         ✕
-      </Button>
-      <Modal.Header className="font-bold">Department Details</Modal.Header>
+      </button>
+      <Modal.Header className="font-bold">{S.modalHeading}</Modal.Header>
       <Modal.Body>
-        <p className="text-error">{errorMessage}</p>
         <form
-          id="employeeForm"
+          id={S.formId}
           onSubmit={formik.handleSubmit}
           className="text-left"
         >
+          <p className="text-error col-span-1 md:col-span-2">{errorMessage}</p>
           <FormController
-            controller="input"
-            name="name"
+            {...S.formField.name}
             value={formik.values.name}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            label="Department Name"
             error={formik.touched.name && formik.errors?.name}
             autoFocus={true}
           />
@@ -91,10 +79,10 @@ export default function EmployeeForm(props: iEmployeeFormprops) {
             onClick={handleClose}
             className="btn btn-primary"
           >
-            Close
+            {S.closeBtn}
           </Button>
-          <Button form="employeeForm" type="submit" className="btn btn-primary">
-            {data ? 'Update' : 'Submit'}
+          <Button form={S.formId} type="submit" className="btn btn-primary">
+            {data ? S.updateBtn : S.submitBtn}
           </Button>
         </div>
       </Modal.Body>

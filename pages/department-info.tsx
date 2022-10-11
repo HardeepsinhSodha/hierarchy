@@ -1,7 +1,7 @@
 import { PencilIcon, TrashIcon, UserPlusIcon } from '@heroicons/react/24/solid';
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { deleteDepartmentAPI } from '../components/department/actions';
 import DepartmentForm from '../components/department/DepartmentForm';
 import { selectAllDepartment } from '../components/department/departmentSlice';
@@ -14,33 +14,36 @@ const DepartmentTable: NextPage = () => {
   const [selectedData, setSelectedData] = useState<iDepartment>();
   const dispatch = useAppDispatch();
   const employeeData = useAppSelector(selectAllDepartment);
-  const handleAction = (
-    type: 'edit' | 'delete' | 'add',
-    data?: iDepartment
-  ) => {
-    if (type === 'edit') {
-      setSelectedData(data);
-      setShow(true);
-    } else if (type === 'add') {
-      setShow(true);
-    } else {
-      dispatch(
-        deleteDepartmentAPI(
-          data as iDepartment,
-          () => {
-            null;
-          },
-          () => {
-            null;
-          }
-        )
-      );
-    }
-  };
+
+  const handleAction = useCallback(
+    (type: 'edit' | 'delete' | 'add', data?: iDepartment) => {
+      if (type === 'edit') {
+        setSelectedData(data);
+        setShow(true);
+      } else if (type === 'add') {
+        setShow(true);
+      } else {
+        dispatch(
+          deleteDepartmentAPI(
+            data as iDepartment,
+            () => {
+              null;
+            },
+            () => {
+              null;
+            }
+          )
+        );
+      }
+    },
+    [dispatch]
+  );
+
   const handleClose = () => {
     setSelectedData(undefined);
     setShow(false);
   };
+
   const columns = useMemo(
     () => [
       {
@@ -48,7 +51,7 @@ const DepartmentTable: NextPage = () => {
         columns: [
           {
             Header: 'Sr.No.',
-            accessor: (_: any, rowIndex: number) => rowIndex + 1,
+            accessor: (_: iDepartment, rowIndex: number) => rowIndex + 1,
             id: 'srno',
           },
           {
@@ -66,12 +69,14 @@ const DepartmentTable: NextPage = () => {
               <div className="flex justify-around">
                 <PencilIcon
                   className="w-8 h-8 cursor-pointer"
+                  data-test-id="edit"
                   onClick={() =>
                     handleAction('edit', row.original as iDepartment)
                   }
                 />
                 <TrashIcon
                   className="w-8 h-8 cursor-pointer"
+                  data-test-id="delete"
                   onClick={() =>
                     handleAction('delete', row.original as iDepartment)
                   }
@@ -82,7 +87,7 @@ const DepartmentTable: NextPage = () => {
         ],
       },
     ],
-    []
+    [handleAction]
   );
 
   return (

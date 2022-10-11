@@ -2,6 +2,7 @@ import {
   iGroupAllDetails,
   iGroupData,
   iGroupMapping,
+  iGroupMemberByEmployeeId,
   iGroupMemberData,
 } from '../types/group';
 
@@ -12,7 +13,7 @@ export const groupData: Record<number, iGroupData> = {
     title: '',
     removable: false,
     admin: 1,
-    allowedDepartments: [],
+    allowedDepartments: [1, 2, 3],
     canHaveSubGroup: true,
     canHaveMembers: true,
     updated_by: 1,
@@ -39,7 +40,7 @@ export const groupData: Record<number, iGroupData> = {
     name: 'Hidden leaf',
     title: 'Hokage',
     admin: 5,
-    allowedDepartments: [1, 2],
+    allowedDepartments: [2, 3],
     removable: true,
     canHaveSubGroup: true,
     canHaveMembers: true,
@@ -53,7 +54,7 @@ export const groupData: Record<number, iGroupData> = {
     name: 'Team 7',
     title: 'Team Lead',
     admin: 6,
-    allowedDepartments: [1, 2],
+    allowedDepartments: [2],
     removable: true,
     canHaveSubGroup: false,
     canHaveMembers: true,
@@ -115,8 +116,8 @@ export const groupMemberData: Record<number, iGroupMemberData> = {
   3: {
     id: 3,
     group_id: 3,
-    employee_id: 3,
-    title: 'Backend Lead',
+    employee_id: 6,
+    title: 'Special Team Memeber',
     joining_date: '03/10/2022',
     left_data: undefined,
   },
@@ -142,6 +143,19 @@ export const groupMemberDataByGroupId: Record<number, number[]> = {
   3: [3],
   4: [4, 5],
 };
+export const groupMemberDataByEmployeeId: iGroupMemberByEmployeeId = {
+  3: [1],
+  4: [2],
+  6: [3],
+  7: [4],
+  8: [5],
+};
+export const adminIndexData: Record<number, number[]> = {
+  1: [1],
+  2: [2],
+  5: [3],
+  6: [4],
+};
 export const groupAllDetails: Record<number, iGroupAllDetails> = {
   1: {
     id: 1,
@@ -149,7 +163,7 @@ export const groupAllDetails: Record<number, iGroupAllDetails> = {
     title: '',
     removable: false,
     admin: 1,
-    allowedDepartments: [],
+    allowedDepartments: [1, 2, 3],
     canHaveSubGroup: true,
     canHaveMembers: true,
     updated_by: 1,
@@ -208,7 +222,7 @@ export const groupAllDetails: Record<number, iGroupAllDetails> = {
     name: 'Hidden leaf',
     title: 'Hokage',
     admin: 5,
-    allowedDepartments: [1, 2],
+    allowedDepartments: [2, 3],
     removable: true,
     canHaveSubGroup: true,
     canHaveMembers: true,
@@ -227,8 +241,8 @@ export const groupAllDetails: Record<number, iGroupAllDetails> = {
       {
         id: 3,
         group_id: 3,
-        employee_id: 3,
-        title: 'Backend Lead',
+        employee_id: 6,
+        title: 'Special Team Memeber',
         joining_date: '03/10/2022',
         left_data: undefined,
       },
@@ -239,7 +253,7 @@ export const groupAllDetails: Record<number, iGroupAllDetails> = {
     name: 'Team 7',
     title: 'Team Lead',
     admin: 6,
-    allowedDepartments: [1, 2],
+    allowedDepartments: [2],
     removable: true,
     canHaveSubGroup: false,
     canHaveMembers: true,

@@ -15,9 +15,10 @@ import {
   REHYDRATE,
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import departmentReducer from '../components/department/departmentSlice';
-import employeeReducer from '../components/employee/employeeSlice';
-import groupReducer from '../components/group_info/groupInfoSlice';
+import departmentReducer from '../department/departmentSlice';
+import employeeReducer from '../employee/employeeSlice';
+import groupReducer from '../group_info/groupInfoSlice';
+import toastReducer from '../toast/toastSlice';
 const persistConfig = {
   key: 'root',
   storage,
@@ -29,6 +30,7 @@ export const rootReducer = combineReducers({
   employee: employeeReducer,
   department: departmentReducer,
   group: groupReducer,
+  toast: toastReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

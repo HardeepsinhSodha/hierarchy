@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .showBtnOnHover button {
+    @apply opacity-0 transition flex;
+  }
+  .showBtnOnHover:hover button {
+    @apply opacity-100;
+  }
+  .react-select__control,
+  .react-select__menu {
+    @apply !bg-base-100 text-base-content;
+  }
+  .react-select__option {
+    @apply text-primary-content bg-primary focus:text-primary-content focus:bg-primary hover:text-primary-content hover:bg-primary-focus;
+  }
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 10px;

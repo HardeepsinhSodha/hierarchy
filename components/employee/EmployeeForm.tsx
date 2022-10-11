@@ -1,8 +1,7 @@
 import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
 import { Button, Modal } from 'react-daisyui';
-import Select from 'react-select';
-import * as Yup from 'yup';
+import Select, { SingleValue } from 'react-select';
 import { useAppDispatch, useAppSelector } from '../../hooks/store/utilityHooks';
 import { iDepartment } from '../../types/department';
 import type iEmployee from '../../types/employee';
@@ -13,29 +12,18 @@ import {
 import FieldWraper from '../form_field/FieldWrapper';
 import FormController from '../form_field/FormController';
 import { addNewEmployeeAPI, editEmployeeAPI } from './actions';
-const phoneRegExp = /\d{10}/i;
+import { controller as S, schema } from './controller';
 
 interface iEmployeeFormprops {
   show: boolean;
   handleClose(): void;
   data?: iEmployee;
 }
+
 interface iEmployeeFormInput extends Omit<iEmployee, 'id' | 'department'> {
   department?: iDepartment;
 }
-const schema = Yup.object().shape({
-  name: Yup.string().trim().required('Required'),
-  username: Yup.string().trim().required('Required'),
-  email_id: Yup.string()
-    .trim()
-    .lowercase()
-    .email('Email Id is not valid.')
-    .required('Required'),
-  phone_number: Yup.string()
-    .matches(phoneRegExp, 'Phone number is not valid')
-    .length(10, 'Phone number is not valid'),
-});
-// department: Yup.string().required('Required'),
+
 export default function EmployeeForm(props: iEmployeeFormprops) {
   const { show, handleClose, data } = props;
   const departmentOptions = useAppSelector(selectAllDepartment);
@@ -61,24 +49,18 @@ export default function EmployeeForm(props: iEmployeeFormprops) {
     }
   };
   const formik = useFormik<iEmployeeFormInput>({
-    initialValues: {
-      name: '',
-      username: '',
-      email_id: '',
-      phone_number: '',
-      department: undefined,
-    },
+    initialValues: S.initialValues,
     onSubmit: onSubmit,
     validationSchema: schema,
   });
   useEffect(() => {
     if (data) {
-      formik.setFieldValue('name', data.name);
-      formik.setFieldValue('username', data.username);
-      formik.setFieldValue('email_id', data.email_id);
-      formik.setFieldValue('phone_number', data.phone_number);
+      formik.setFieldValue(S.formField.name.id, data.name);
+      formik.setFieldValue(S.formField.username.id, data.username);
+      formik.setFieldValue(S.formField.email_id.id, data.email_id);
+      formik.setFieldValue(S.formField.phone_number.id, data.phone_number);
       formik.setFieldValue(
-        'department',
+        S.formField.department.id,
         departmentOptionsById[data.department]
       );
       setErrorMessage('');
@@ -87,84 +69,69 @@ export default function EmployeeForm(props: iEmployeeFormprops) {
       setErrorMessage('');
       formik.resetForm();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, departmentOptionsById, show]);
 
   return (
-    <Modal
-      className="w-6/12 max-w-5xl"
-      open={show}
-      onClickBackdrop={handleClose}
-    >
-      <Button
-        size="sm"
-        shape="circle"
-        className="absolute right-2 top-2"
+    <Modal className="w-6/12 max-w-5xl" open={show}>
+      <button
+        className="btn btn-sm btn-circle absolute right-2 top-2"
         onClick={handleClose}
       >
         ✕
-      </Button>
-      <Modal.Header className="font-bold">Employee Details</Modal.Header>
+      </button>
+      <Modal.Header className="font-bold">{S.modalHeading}</Modal.Header>
       <Modal.Body>
-        <p className="text-error">{errorMessage}</p>
         <form
-          id="employeeForm"
+          id={S.formId}
           onSubmit={formik.handleSubmit}
-          className="text-left grid grid-col-1 sm:grid-cols-2"
+          className="text-left grid grid-col-1 md:grid-cols-2"
         >
+          <p className="text-error col-span-1 md:col-span-2">{errorMessage}</p>
           <FormController
-            controller="input"
-            name="name"
+            {...S.formField.name}
             value={formik.values.name}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            label="Full Name"
             error={formik.touched.name && formik.errors?.name}
             autoFocus={true}
           />
           <FormController
-            controller="input"
-            name="username"
+            {...S.formField.username}
             value={formik.values.username}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            label="Display/User Name"
             error={formik.touched.username && formik.errors?.username}
           />
           <FormController
-            controller="input"
-            name="email_id"
-            type="email"
+            {...S.formField.email_id}
             value={formik.values.email_id}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            label="Email"
             error={formik.touched.email_id && formik.errors?.email_id}
           />
           <FormController
-            controller="input"
-            name="phone_number"
+            {...S.formField.phone_number}
             value={formik.values.phone_number}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            label="Phone Number"
             error={formik.touched.phone_number && formik.errors?.phone_number}
           />
           <FieldWraper
-            controller="select"
-            name="department"
-            label="Department"
+            {...S.formField.department}
             error={formik.touched.department && formik.errors?.department}
           >
             <Select
-              name="department"
+              id={S.formField.department.id}
+              name={S.formField.department.name}
               value={formik.values.department}
-              onChange={(value: any) =>
-                formik.setFieldValue('department', value)
+              onChange={(value: SingleValue<iDepartment>) =>
+                formik.setFieldValue(S.formField.department.name, value)
               }
               onBlur={formik.handleBlur}
               getOptionValue={(options) => options.id.toString()}
               getOptionLabel={(options) => options.name}
-              options={departmentOptions ?? []}
+              options={departmentOptions}
               menuPlacement="top"
             />
           </FieldWraper>
@@ -175,10 +142,10 @@ export default function EmployeeForm(props: iEmployeeFormprops) {
             onClick={handleClose}
             className="btn btn-primary"
           >
-            Close
+            {S.closeBtn}
           </Button>
-          <Button form="employeeForm" type="submit" className="btn btn-primary">
-            {data ? 'Update' : 'Submit'}
+          <Button form={S.formId} type="submit" className="btn btn-primary">
+            {data ? S.updateBtn : S.submitBtn}
           </Button>
         </div>
       </Modal.Body>

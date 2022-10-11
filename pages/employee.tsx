@@ -1,7 +1,7 @@
 import { PencilIcon, TrashIcon, UserPlusIcon } from '@heroicons/react/24/solid';
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { selectAllDepartmentById } from '../components/department/departmentSlice';
 import { deleteEmployeeAPI } from '../components/employee/actions';
 import EmployeeForm from '../components/employee/EmployeeForm';
@@ -15,26 +15,29 @@ const EmployeeTable: NextPage = () => {
   const dispatch = useAppDispatch();
   const employeeData = useAppSelector(selectAllEmployee);
   const departmentOptions = useAppSelector(selectAllDepartmentById);
-  const handleAction = (type: 'edit' | 'delete' | 'add', data?: iEmployee) => {
-    if (type === 'edit') {
-      setSelectedData(data);
-      setShow(true);
-    } else if (type === 'add') {
-      setShow(true);
-    } else {
-      dispatch(
-        deleteEmployeeAPI(
-          data as iEmployee,
-          () => {
-            null;
-          },
-          () => {
-            null;
-          }
-        )
-      );
-    }
-  };
+  const handleAction = useCallback(
+    (type: 'edit' | 'delete' | 'add', data?: iEmployee) => {
+      if (type === 'edit') {
+        setSelectedData(data);
+        setShow(true);
+      } else if (type === 'add') {
+        setShow(true);
+      } else {
+        dispatch(
+          deleteEmployeeAPI(
+            data as iEmployee,
+            () => {
+              null;
+            },
+            () => {
+              null;
+            }
+          )
+        );
+      }
+    },
+    [dispatch]
+  );
   const handleClose = () => {
     setSelectedData(undefined);
     setShow(false);
@@ -46,7 +49,7 @@ const EmployeeTable: NextPage = () => {
         columns: [
           {
             Header: 'Sr.No.',
-            accessor: (_: any, rowIndex: number) => rowIndex + 1,
+            accessor: (_: iEmployee, rowIndex: number) => rowIndex + 1,
             id: 'srno',
           },
           {
@@ -82,12 +85,14 @@ const EmployeeTable: NextPage = () => {
               <div className="flex justify-around">
                 <PencilIcon
                   className="w-8 h-8 cursor-pointer"
+                  data-test-id="edit"
                   onClick={() =>
                     handleAction('edit', row.original as iEmployee)
                   }
                 />
                 <TrashIcon
                   className="w-8 h-8 cursor-pointer"
+                  data-test-id="delete"
                   onClick={() =>
                     handleAction('delete', row.original as iEmployee)
                   }
@@ -98,7 +103,7 @@ const EmployeeTable: NextPage = () => {
         ],
       },
     ],
-    []
+    [departmentOptions, handleAction]
   );
 
   return (
