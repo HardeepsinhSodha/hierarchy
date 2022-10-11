@@ -19,7 +19,7 @@ export const controller = {
   expandAll: 'Expand All',
   collapseAll: 'Collapse All',
   addEmployee: 'Add Employee',
-  createGroup: 'Collapse All',
+  createGroup: 'Create Group',
   editEmployeeDetails: 'editEmployeeDetails',
   action: {
     error: {},
