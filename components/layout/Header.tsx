@@ -2,6 +2,10 @@ import { Bars3Icon, ChevronDownIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import ThemeSelect from './ThemeSelect';
 export default function Header() {
+  const handleResetData = () => {
+    localStorage.clear();
+    window.location.reload();
+  };
   return (
     <div className="w-full navbar bg-base-100 shadow-md mb-4">
       <div className="flex-1">
@@ -40,6 +44,11 @@ export default function Header() {
             </ul>
           </li>
         </ul>
+      </div>
+      <div className="flex-none">
+        <button className="btn btn-ghost" onClick={handleResetData}>
+          Reset Data
+        </button>
       </div>
       <div className="flex-none">
         <ThemeSelect />

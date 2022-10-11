@@ -3,6 +3,10 @@ import { PropsWithChildren } from 'react';
 import Header from './Header';
 
 export default function Drawer(props: PropsWithChildren) {
+  const handleResetData = () => {
+    localStorage.clear();
+    window.location.reload();
+  };
   return (
     <div className="drawer">
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
@@ -32,6 +36,9 @@ export default function Drawer(props: PropsWithChildren) {
             <Link href="/department-info">
               <a>Department</a>
             </Link>
+          </li>
+          <li>
+            <button onClick={handleResetData}>Reset Data</button>
           </li>
         </ul>
       </div>
