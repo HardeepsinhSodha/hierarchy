@@ -4,7 +4,7 @@ import { controller as SE } from '../../../components/employee/controller';
 import { controller as S } from '../../../components/group_info/controller';
 const department1 = 'department1';
 const department2 = 'department2';
-describe('Department Test', () => {
+describe('Group Test', () => {
   beforeEach(() => {
     cy.viewport(1280, 720);
     //create departments

@@ -265,9 +265,14 @@ export const promoteAdminAPI =
         if (groupMappingId) {
           const parent_group_id =
             state.group.groupMapping[groupMappingId].parent_group_id;
-          const parentGroupDetails =
-            state.group.groupAllDetails[parent_group_id];
-          dispatch(editGroup({ ...parentGroupDetails, admin }));
+          const parentGroupDetails = {
+            ...state.group.groupAllDetails[parent_group_id],
+          };
+          parentGroupDetails.members = parentGroupDetails?.members?.filter(
+            (member) => member.employee_id !== admin
+          );
+          parentGroupDetails.admin = admin;
+          dispatch(editGroup(parentGroupDetails));
           dispatch(editGroup({ ...body, admin: undefined }));
           onSuccess?.();
           dispatch(
@@ -295,7 +300,6 @@ export const promoteAdminAPI =
         );
       }
     } catch (error) {
-      onError?.(error as string);
       dispatch(
         addNewAlert({ text: commonStrings.somethingWentWrong, status: 'error' })
       );

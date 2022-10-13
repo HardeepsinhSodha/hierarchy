@@ -49,7 +49,6 @@ export default function GroupAllDetailsForm(props: iEmployeeFormprops) {
     iEmployee[] | undefined
   >();
   const onSubmit = (values: iGroupAllDetailsInput) => {
-    console.log(values);
     if (data) {
       dispatch(
         editGroupAllDetailsAPI(
