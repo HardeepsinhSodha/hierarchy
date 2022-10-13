@@ -1,11 +1,12 @@
 /// <reference types="cypress" />
+import 'cypress-localstorage-commands';
 import { controller as SD } from '../../../components/department/controller';
 import { controller as SE } from '../../../components/employee/controller';
 import { controller as S } from '../../../components/group_info/controller';
 const department1 = 'department1';
 const department2 = 'department2';
 describe('Group Test', () => {
-  beforeEach(() => {
+  before(() => {
     cy.viewport(1280, 720);
     //create departments
     cy.visit('http://localhost:3000/department-info');
@@ -48,7 +49,11 @@ describe('Group Test', () => {
     cy.get('button[type=submit]').click();
     cy.contains(SE.action.success.added('name2')).should('exist');
     cy.get('[data-test-id="remove-alert"]').click();
-
+    cy.saveLocalStorage('persist:root');
+  });
+  beforeEach(() => {
+    cy.viewport(1280, 720);
+    cy.restoreLocalStorage('persist:root');
     cy.visit('http://localhost:3000/group-info');
     cy.get('button[type=submit]').as('submitBtn');
   });

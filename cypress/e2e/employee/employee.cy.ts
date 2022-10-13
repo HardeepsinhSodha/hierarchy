@@ -1,8 +1,9 @@
 /// <reference types="cypress" />
+import 'cypress-localstorage-commands';
 import { controller as S } from '../../../components/employee/controller';
 const department = 'department1';
 describe('Employee Test', () => {
-  beforeEach(() => {
+  before(() => {
     cy.viewport(1280, 720);
     cy.visit('http://localhost:3000/department-info');
     cy.contains(/Add department/i).click();
@@ -12,6 +13,11 @@ describe('Employee Test', () => {
     cy.get('button[type=submit]').click();
     cy.contains(S.action.success.added(department)).should('exist');
     cy.get('[data-test-id="remove-alert"]').click();
+    cy.saveLocalStorage('persist:root');
+  });
+  beforeEach(() => {
+    cy.viewport(1280, 720);
+    cy.restoreLocalStorage('persist:root');
     cy.visit('http://localhost:3000/employee');
     cy.get('button[type=submit]').as('submitBtn');
   });
